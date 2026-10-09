@@ -40,16 +40,10 @@ def generate_video():
     return video_path
 
 def upload_to_instagram(video_path):
-    print("4. جاري إعداد عميل إنستغرام مع تجاوز حماية الإصدار...")
+    print("4. جاري تسجيل الدخول إلى إنستغرام...")
     cl = Client()
     
-    # تحديث إعدادات الجهاز لمنع خطأ "نسخة التطبيق قديمة"
-    cl.set_version("269.0.0.18.75") # إصدار أحدث لتطبيق إنستغرام
-    cl.set_locale("en_US")
-    cl.set_timezone_offset(10800) # توقيت بغداد تقريباً
-    
     try:
-        print("جاري محاولة تسجيل الدخول...")
         cl.login(USERNAME, PASSWORD)
         print("تم تسجيل الدخول بنجاح!")
         

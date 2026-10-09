@@ -6,12 +6,10 @@ from instagrapi import Client
 
 # ===============================
 # إعدادات الحساب والنص
-# لضمان السرية التامة GitHub Secrets تسحب بيانات الحساب بأمان
 # ===============================
 USERNAME = os.getenv("IG_USERNAME")
 PASSWORD = os.getenv("IG_PASSWORD")
 
-# النص التوعوي القانوني الخاص بسلسلة الوعي القانوني ضد الابتزاز
 LEGAL_TEXT = (
     "احذر! الابتزاز الإلكتروني جريمة يعاقب عليها القانون العراقي بشدة. "
     "لا تضحي بنفسك وتخضع للمبتز، توجه فوراً إلى الجهات المختصة واستشر محاميك."
@@ -33,24 +31,25 @@ def generate_video():
     audio_clip = AudioFileClip(audio_path)
     duration = audio_clip.duration
     
-    # إنشاء خلفية ملونة للفيديو (مقاسات الريلز عمودية 1080x1920 أو ما يناسبها كخلفية بسيطة)
-    # ملاحظة: إذا ظهرت أي مشاكل في TextClip بسبب نظام التشغيل، يمكنك تعديل الخط لاحقاً
     bg_clip = ColorClip(size=(1080, 1920), color=(20, 20, 40), duration=duration)
-    
-    # دمج الصوت مع الفيديو
     video = bg_clip.set_audio(audio_clip)
     video_path = "final_reel.mp4"
     
-    # كتابة الفيديو وفظه
     video.write_videofile(video_path, fps=24, codec="libx264", audio_codec="aac")
     print("3. تم إنشاء الفيديو بنجاح!")
     return video_path
 
 def upload_to_instagram(video_path):
-    print("4. جاري تسجيل الدخول إلى إنستغرام...")
+    print("4. جاري إعداد عميل إنستغرام مع تجاوز حماية الإصدار...")
     cl = Client()
     
+    # تحديث إعدادات الجهاز لمنع خطأ "نسخة التطبيق قديمة"
+    cl.set_version("269.0.0.18.75") # إصدار أحدث لتطبيق إنستغرام
+    cl.set_locale("en_US")
+    cl.set_timezone_offset(10800) # توقيت بغداد تقريباً
+    
     try:
+        print("جاري محاولة تسجيل الدخول...")
         cl.login(USERNAME, PASSWORD)
         print("تم تسجيل الدخول بنجاح!")
         
@@ -67,8 +66,7 @@ def upload_to_instagram(video_path):
 
 if __name__ == "__main__":
     if not USERNAME or not PASSWORD:
-        print("خطأ: يجيب التأكد من ضبط متغيرات IG_USERNAME و IG_PASSWORD في Secrets")
+        print("خطأ: يرجى التأكد من ضبط متغيرات IG_USERNAME و IG_PASSWORD في Secrets")
     else:
-        # توليد الفيديو ثم رفعه
         vid_file = generate_video()
         upload_to_instagram(vid_file)
